@@ -1,6 +1,7 @@
 from PIL import Image
 from PIL.ExifTags import TAGS
 import os
+import shutil
 
 def print_exif_data(image_path):
     # Open an image file
@@ -77,6 +78,10 @@ def file_area_in_pixels(image_path):
     width, height = image.size
     return width * height
 
+def file_size_in_bytes(image_path):
+    # Get the size of an image file in bytes
+    return os.path.getsize(image_path)
+
 def split_duplicate_list_keeping_largest(input_list_of_duplicates_files):
     # Return two lists, one of duplicates to remove and one file keep
     # The list of duplicates to remove should be the files with the smallest area in pixels
@@ -108,9 +113,40 @@ def for_donor_file_what_are_the_prinicpals_to_remove(donor_file, principal_dir):
 
     return found
 
+def ensure_subfolder_exists(principal_dir):
+    # Ensure that a subfolder named /duplicates exists in the principal_dir
+    duplicates_dir = os.path.join(principal_dir, 'duplicates')
+    if not os.path.exists(duplicates_dir):
+        os.makedirs(duplicates_dir)
+
 def move_duplicates_into_sub_folder(principal_dir,duplicate_file_list):
     # ensure the subfolder /duplicates exists
-    # move files to subfolder
+    ensure_subfolder_exists(principal_dir)
+    # move files in duplicate_file_list into the /duplicates subfolder
+    duplicates_dir = os.path.join(principal_dir, 'duplicates')
+    for file in duplicate_file_list:
+        shutil.move(file, duplicates_dir)
+
+def move_donor_into_principal(donor_file, principal_dir):
+    # Move the donor_file into the principal_dir
+    shutil.move(donor_file, principal_dir)
+
+def process_donor_file(donor_file, principal_dir):
+    found = for_donor_file_what_are_the_prinicpals_to_remove(donor_file, principal_dir)
+    move_duplicates_into_sub_folder(principal_dir, found)
+    move_donor_into_principal(donor_file, principal_dir)
+
+def process_all_donor_files(donor_dir, principal_dir):
+    # Get a list of full paths to all .jpg files in the donor_dir
+    jpg_files = [
+        os.path.join(donor_dir, file) 
+        for file in os.listdir(donor_dir) 
+        if file.lower().endswith('.jpg')
+    ]
+
+    # Process each donor file
+    for donor_file in jpg_files:
+        process_donor_file(donor_file, principal_dir)
 
 
 def add_numbers(a, b):
