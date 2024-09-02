@@ -128,10 +128,28 @@ def move_duplicates_into_sub_folder(principal_dir,duplicate_file_list):
         shutil.move(file, duplicates_dir)
 
 def move_donor_into_principal(donor_file, principal_dir):
-    # Move the donor_file into the principal_dir
-    shutil.move(donor_file, principal_dir)
+    # Get the base name of the donor file (without the directory path)
+    base_name = os.path.basename(donor_file)
+    
+    # Create the target file path
+    target_path = os.path.join(principal_dir, base_name)
+    
+    # Initialize a counter for the suffix
+    counter = 2
+    
+    # Check if the file already exists in the principal directory
+    while os.path.exists(target_path):
+        # If it exists, add a suffix to the file name (before the extension)
+        name, ext = os.path.splitext(base_name)
+        new_name = f"{name}-{counter}{ext}"
+        target_path = os.path.join(principal_dir, new_name)
+        counter += 1
+    
+    # Move the donor file to the target path
+    shutil.move(donor_file, target_path)
 
 def process_donor_file(donor_file, principal_dir):
+    print("Processing {}".format(donor_file))
     found = for_donor_file_what_are_the_prinicpals_to_remove(donor_file, principal_dir)
     move_duplicates_into_sub_folder(principal_dir, found)
     move_donor_into_principal(donor_file, principal_dir)
