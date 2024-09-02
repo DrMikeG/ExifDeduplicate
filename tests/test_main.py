@@ -5,6 +5,7 @@ from src.main import add_numbers
 from src.main import print_exif_data, count_exif_tags
 from src.main import file_has_data_time, parse_consistent_date_time_value
 from src.main import two_files_have_same_date_time, file_area_in_pixels
+from src.main import count_files_in_directory, for_donor_file_what_are_the_prinicpals_to_remove
 
 class TestMain(unittest.TestCase):
 
@@ -61,6 +62,42 @@ class TestMain(unittest.TestCase):
 
     def test_file_area_00(self):
         self.assertEqual(file_area_in_pixels('./tests/inputs/DSC_0335.jpg'), 2789376)
+
+    def test_count_files_in_principal_dir(self):
+        principal_dir = '/Volumes/Backup_6TB/Photos/GooglePhotos/2012'
+        self.assertEqual(count_files_in_directory(principal_dir),529)
+    
+    def test_count_files_in_donor_dir(self):
+        donor_dir = '/Users/mike/Desktop/Easter_2024/2012_missing_from_google'
+        self.assertEqual(count_files_in_directory(donor_dir),473)
+
+    # For a file in the donor folder
+    # Extract the date-time
+    # Does this date-time exist in principal_dir?
+    # Delete the file(s) from principal_dir
+    # Copy in the file from donor dir
+
+    def test_count_files_in_principal_test_dirA(self):
+        principal_dir = './tests/inputs/test_principalA'
+        self.assertEqual(count_files_in_directory(principal_dir),5)
+        donor_dir = './tests/inputs/test_donorA'
+        self.assertEqual(count_files_in_directory(donor_dir),2)
+
+    def test_file_area_01(self):
+        self.assertEqual(file_area_in_pixels('./tests/inputs/test_donorA/DSC_6315.jpg'), 4983160)
+
+    def test_find_duplicates_6315(self):
+        donor = './tests/inputs/test_donorA/DSC_6315.jpg'
+        principal_dir = './tests/inputs/test_principalA'
+        duplicates = for_donor_file_what_are_the_prinicpals_to_remove(donor,principal_dir)
+        self.assertEquals(len(duplicates),2)
+
+    def test_find_duplicates_6352(self):
+        donor = './tests/inputs/test_donorA/DSC_6352.jpg'
+        principal_dir = './tests/inputs/test_principalA'
+        duplicates = for_donor_file_what_are_the_prinicpals_to_remove(donor,principal_dir)
+        self.assertEquals(len(duplicates),1)
+
 
 
 

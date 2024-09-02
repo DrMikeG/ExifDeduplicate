@@ -1,6 +1,6 @@
 from PIL import Image
 from PIL.ExifTags import TAGS
-
+import os
 
 def print_exif_data(image_path):
     # Open an image file
@@ -83,6 +83,30 @@ def split_duplicate_list_keeping_largest(input_list_of_duplicates_files):
     # The list of files to keep should be the files with the largest area in pixels
     input_list_of_duplicates_files.sort(key=lambda x: file_area_in_pixels(x))
     return input_list_of_duplicates_files[1:], input_list_of_duplicates_files[:1]
+
+def count_files_in_directory(directory):
+    jpg_files = [file for file in os.listdir(directory) if file.lower().endswith('.jpg')]
+    # Count the number of .jpg files
+    return len(jpg_files)
+
+def for_donor_file_what_are_the_prinicpals_to_remove(donor_file, principal_dir):
+    # Get a list of full paths to all .jpg files in the principal_dir
+    jpg_files = [
+        os.path.join(principal_dir, file) 
+        for file in os.listdir(principal_dir) 
+        if file.lower().endswith('.jpg')
+    ]
+    
+    # Filter the list based on your condition
+    found = [
+        file for file in jpg_files 
+        if two_files_have_same_date_time(donor_file, file)
+    ]
+
+    if len(found) > 0:
+        print("Found {} duplicates of {}".format(len(found),donor_file))
+
+    return found
 
 
 
