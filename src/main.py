@@ -108,6 +108,9 @@ def for_donor_file_what_are_the_prinicpals_to_remove(donor_file, principal_dir):
 
     return found
 
+def move_duplicates_into_sub_folder(principal_dir,duplicate_file_list):
+    # ensure the subfolder /duplicates exists
+    # move files to subfolder
 
 
 def add_numbers(a, b):
